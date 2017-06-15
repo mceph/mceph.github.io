@@ -1,7 +1,7 @@
 # mceph.github.io
 云计算知识分享
 
-发布文章方法如下：
+#发布文章方法如下：
 1）在_posts目录下新建一个.md文件
 	文件的命名方式一般为：YYYY-MM-DD-ZZZ.md,其中YYYY表示年份，MM表示月份，DD表示天，ZZZ为文章的一个说明。
 	文件名称最好是全英文，以防引起不必要的错误。
@@ -18,6 +18,7 @@ title: RxBinding 学习笔记
 category: android
 tags: [android, jni]
 ---
+
 
 文章的开头都采用如上格式。layout这里固定为post; title为文章的标题； category为文章所属分类；
 tags为文章的标签，可以支持多个标签，标签之间用逗号分割。
