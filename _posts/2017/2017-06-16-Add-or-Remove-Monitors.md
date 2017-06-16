@@ -5,10 +5,11 @@ category: monitor
 tags: [ceph,monitor,监控器]
 ---
 
+# 添加或移除monitors
 本文参照[官网操作手册](http://docs.ceph.com/docs/master/rados/operations/add-or-rm-mons/)
 
-# 预知条件
-## 集群概况
+## 预知条件
+### 集群概况
     [root@sz-3 ceph]# ceph osd tree
     ID  WEIGHT  TYPE NAME                                UP/DOWN REWEIGHT PRIMARY-AFFINITY 
     -10 0.89999 failure-domain sata-00                                                     
@@ -66,7 +67,8 @@ tags: [ceph,monitor,监控器]
 
 由上可见：本集群共有 3 个 monitor。且该集群处于 `HEALTH_OK` 状态
 
-# 添加mon（手动）
+
+## 添加mon（手动）
 
 添加monitor之前，要保证网络端口的连通性，即每个monitor都要能够：
 * 与其它 monitors 互联
@@ -115,7 +117,7 @@ tags: [ceph,monitor,监控器]
     host = {mon-id}
     addr = {ip:port}
 
-# 移除mon
+## 移除mon
 现在准备移除 `mon.sz-3` 这个 monitor。
 
 ### 从“健康”状态的集群中移除monitor
@@ -205,7 +207,7 @@ tags: [ceph,monitor,监控器]
 8, 你可能希望归档被删除的monitor的数据目录 `/var/lib/ceph/mon`以保存到一个安全的地方，或者，如果你确信剩下的monitor是健康的且是冗余足够的，也可以删除数据目录
 
 
-# 更改 monitor 的 ip 地址
+## 更改 monitor 的 ip 地址
 **重要**：不应该改变已经存在的 monitors 的 ip 地址
 
 在 ceph 集群中 monitors 是非常挑剔的组件，它们要正常工作，必须组成法定人数。为了组成法定人数，它们必须能够发现彼此。要发现彼此，ceph有严格的条件。
