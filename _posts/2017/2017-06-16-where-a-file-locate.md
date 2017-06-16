@@ -128,7 +128,8 @@ tags: [原创,ceph,crush算法]
     default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.3
     default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.2
 
-一共列出了12 个相关对象，其中有一个是元数据，其它的是刚刚上传的文件 `cmake-3.6.2-win64-x64.msi` 被条带化后产生的子object，子object的名称后面有它的序号。也就是说，`cmake-3.6.2-win64-x64.msi` 被条带化为了 11 个子object。结合本集群的条带化尺寸为 4MB，文件大小为 15,771,063 字节，15771063 / 4MB == 
+一共列出了12 个相关对象，其中有一个是元数据，其它的是刚刚上传的文件 `cmake-3.6.2-win64-x64.msi` 被条带化后产生的子object，子object的名称后面有它的序号。也就是说，`cmake-3.6.2-win64-x64.msi` 被条带化为了 11 个子object。结合本集群的条带化尺寸为 4MB，文件大小为 15,771,063 字节，
+`15771063 / 4194304 = 3.76` ，需要 4 个子object。
 
 
 
