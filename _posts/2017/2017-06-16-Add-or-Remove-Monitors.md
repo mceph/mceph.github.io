@@ -120,33 +120,37 @@ tags: [ceph,monitor,监控器]
 
 ### 从“健康”状态的集群中移除monitor
 
-1. 停止monitor
+1, 停止monitor
 
-    `[root@sz-3 ceph]# service ceph -a stop mon.sz-3
+
+    [root@sz-3 ceph]# service ceph -a stop mon.sz-3
     === mon.sz-3 === 
     Stopping Ceph mon.sz-3 on sz-3...kill 11884...done111
-    `
-2. 从集群中移除monitor
 
-    `[root@sz-3 ceph]# ceph mon remove sz-3    
+        
+2, 从集群中移除monitor
+
+
+    [root@sz-3 ceph]# ceph mon remove sz-3    
     2017-06-14 17:40:07.570951 7f45db885700  0 -- :/1167820720 >> 10.133.134.243:6789/0 pipe(0x7f45e006e550 sd=4 :0 s=1 pgs=0 cs=0 l=1 c=0x7f45e00632f0).fault
     removed mon.sz-3 at 10.133.134.243:6789/0, there are now 2 monitors
-    `
+    
 
-3. 从 `ceph.conf` 中删除被移除的 monitor 的 `host` 和 IP 地址。主要包括：
+3, 从 `ceph.conf` 中删除被移除的 monitor 的 `host` 和 IP 地址。主要包括：
 
-    `[global]
+
+    [global]
     mon_initial_members=
     mon_host=
     [mon.{mon-id}]
     host = {mon-id}
-    addr = {ip:port}`
+    addr = {ip:port}
     
 
 
-4. 归档备份或删除被移除的 monitor 的数据目录 `/var/lib/ceph/mon/ceph-{mon-id}`
+4, 归档备份或删除被移除的 monitor 的数据目录 `/var/lib/ceph/mon/ceph-{mon-id}`
     
-3. 查看集群状态
+5, 查看集群状态
 
 
     [root@sz-3 ceph]# ceph -s
@@ -168,20 +172,20 @@ tags: [ceph,monitor,监控器]
 
 如果一个集群处于“不健康”状态（比如monitor的数量不足以组成法定人数（quorum）），从这样的集群移除monitor的流程如下：
 
-1. 停止所有 host 上的所有 monitor
+1, 停止所有 host 上的所有 monitor
 
-    `service ceph stop mon || stop ceph-mon-all`
+    service ceph stop mon || stop ceph-mon-all
 
-2. 识别出一个“健康”的monitor，ssh登录到它所在的 host
+2, 识别出一个“健康”的monitor，ssh登录到它所在的 host
 
-3. 提取出 monmap 文件
+3, 提取出 monmap 文件
 
 
     ceph-mon -i {mon-id} --extract-monmap {map-path}
     # in most cases, that's
     ceph-mon -i `hostname` --extract-monmap /tmp/monmap
     
-4. 移除非健康的或有问题的monitor。例如，如果你有3个monitor：`mon.a`,`mon.b`,`mon.c`,其中 `mon.a` 是健康的，按照下面的步骤操作：
+4, 移除非健康的或有问题的monitor。例如，如果你有3个monitor：`mon.a`,`mon.b`,`mon.c`,其中 `mon.a` 是健康的，按照下面的步骤操作：
 
 
     monmaptool {map-path} --rm {mon-id}
@@ -189,16 +193,16 @@ tags: [ceph,monitor,监控器]
     monmaptool /tmp/monmap --rm b
     monmaptool /tmp/monmap --rm c
     
-5. 将“健康”的monitors注入到 monmap。例如，将 `mon.a` 注入到 monmap，例如：
+5, 将“健康”的monitors注入到 monmap。例如，将 `mon.a` 注入到 monmap，例如：
 
 
     ceph-mon -i {mon-id} --inject-monmap {map-path}
     # for example,
     ceph-mon -i a --inject-monmap /tmp/monmap
 
-6. 启动“健康”的monitor
-7. 验证monitor已经组成了法定人数（`ceph -s`）
-8. 你可能希望归档被删除的monitor的数据目录 `/var/lib/ceph/mon`以保存到一个安全的地方，或者，如果你确信剩下的monitor是健康的且是冗余足够的，也可以删除数据目录
+6, 启动“健康”的monitor
+7, 验证monitor已经组成了法定人数（`ceph -s`）
+8, 你可能希望归档被删除的monitor的数据目录 `/var/lib/ceph/mon`以保存到一个安全的地方，或者，如果你确信剩下的monitor是健康的且是冗余足够的，也可以删除数据目录
 
 
 # 更改 monitor 的 ip 地址
