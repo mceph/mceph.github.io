@@ -21,14 +21,13 @@
 > category: android
 >
 > \## tags: \[android, jni\]<br>
-
 > \---
 
 每篇文章的最顶部开头部分都固定采用如上格式，各字段解释如下。  
-`layout`这里固定为`post`;   
-`title`为文章的标题；   
-`category`为文章所属分类；  
-`tags`为文章的标签，可以支持多个标签，标签之间用逗号分割。
+`layout`：这里固定为`post`;   
+`title`：为文章的标题；   
+`category`：为文章所属分类；  
+`tags`：为文章的标签，可以支持多个标签，标签之间用逗号分割。
 
 3. 图片存放位置  
    图片一般存在`assets/images`目录下
