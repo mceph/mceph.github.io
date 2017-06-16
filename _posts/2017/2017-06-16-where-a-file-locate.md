@@ -90,12 +90,45 @@ tags: [原创,ceph,crush算法]
 
 ## 找出刚才上传的文件被ceph存到什么地方去了
 
+1, 查看bucket，确认文件是否已存到ceph集群里
+
+    [root@sz-1 ~]# radosgw-admin bucket list --bucket=wucq-test
+    [
+        {
+            "name": "cmake-3.6.2-win64-x64.msi",
+            "instance": "",
+            "namespace": "",
+            "owner": "965DE31419464D8C92C20907668C9CE0",
+            "owner_display_name": "app_965DE31419464D8C92C20907668C9CE0",
+            "size": 15771063,
+            "mtime": "2017-06-16 06:05:23.000000Z",
+            "etag": "ef8f09c0e85fad29a1a62b339b992471-11",
+            "content_type": "binary\/octet-stream",
+            "tag": "default.19821.5258",
+            "flags": 0
+        }
+    
+    ]
 
 
+2, 查看该文件在rados集群中的分布
+在ceph的对象存储中，对象数据是保存在池 .rgw.buckets 中的，我们来查看一下刚上传的文件在ceph存储集群中的对象名。
 
+    [root@sz-1 ~]# rados -p .rgw.buckets ls | grep  cmake-3.6.2-win64-x64.msi
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.10
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.8
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.4
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.7
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.6
+    default.21039.18_cmake-3.6.2-win64-x64.msi
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.9
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.11
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.5
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.3
+    default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.2
 
-
-
+一共列出了12 条数据，其中有一条是元数据，其它的是刚刚上传的文件被条带化后产生的子object,子object的名称后面有它的序号。
 
 
 
