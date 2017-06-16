@@ -15,12 +15,13 @@
 
 例如：
 
-> \---
+> \---<br>
 > layout: post  
 > title: RxBinding 学习笔记  
 > category: android
 >
-> \## tags: \[android, jni\]
+> \## tags: \[android, jni\]<br>
+
 > \---
 
 文章的开头都采用如上格式。  
