@@ -82,7 +82,8 @@ tags: [原创,ceph,crush算法]
 本集群条带化尺寸为 4M。
 
 
-
+## 上传文件
+我们通过[美的云 OSS Web 管理控制台](http://mconsole.midea.net)
 
 
 
