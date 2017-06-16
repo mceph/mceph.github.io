@@ -159,3 +159,5 @@ tags: [原创,ceph,crush算法]
     -rw-r--r-- 1 root root 1572864 Jun 16 14:46 default.21039.18\u\umultipart\ucmake\u3.6.2\uwin64\ux64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1__head_A492DFD8__16
     
 可见，子object `default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1` 的 size 为 1572864 字节。
+
+5，按照上面的步骤，找出剩下的 10 个子objects 的 size，相加，正好等于 15771063 字节。
