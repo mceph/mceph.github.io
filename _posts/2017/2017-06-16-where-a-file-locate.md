@@ -139,3 +139,4 @@ tags: [原创,ceph,crush算法]
     osdmap e337 pool '.rgw.buckets' (22) object 'default.21039.18__multipart_fm727chb174_build_setup.exe.2~9OQ6y6sBS3qGXujULlYDx5sAQy9h71h.1' -> pg 22.a492dfd8 (22.58) -> up ([4,7], p4) acting ([4,7], p4)
 
 可见，子object `default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1` 分布在归置组 `22.58` 上面，在 `osd.4, osd.7` 上面各有一份副本。
+
