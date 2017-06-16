@@ -133,4 +133,5 @@ tags: [原创,ceph,crush算法]
 因为我们的Web控制台在上传的时候，使用了分片上传，每个分片的大小是1.5MB，`15771063 / (1.5 * 1024 * 1024) = 10.0269718170166015625`，也就是说需要11个子object，正好与实际相符。
 
 3, 接下来，逐个找出上面 11 个子object被 ceph 存在哪里，然后将它们的 size 相加， 是否和原始文件的大小相等。
+下面以第一个子object `default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1` 为例，讲解如何定位 object 的位置。
 
