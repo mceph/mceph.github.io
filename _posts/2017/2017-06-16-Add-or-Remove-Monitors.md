@@ -2,7 +2,7 @@
 layout: post
 title: ceph monitors管理
 category: monitor
-tags: [ceph,monitor,监控器]
+tags: [原创,ceph,monitor,监控器]
 ---
 
 # 添加或移除monitors
