@@ -122,11 +122,10 @@ tags: [ceph,monitor,监控器]
 
 1. 停止monitor
 
-
-    [root@sz-3 ceph]# service ceph -a stop mon.sz-3
+    `[root@sz-3 ceph]# service ceph -a stop mon.sz-3
     === mon.sz-3 === 
     Stopping Ceph mon.sz-3 on sz-3...kill 11884...done
-
+    `
 
 2. 从集群中移除monitor
 
