@@ -141,4 +141,19 @@ tags: [原创,ceph,crush算法]
 可见，子object `default.21039.18__multipart_cmake-3.6.2-win64-x64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1` 分布在归置组 `22.58` 上面，在 `osd.4, osd.7` 上面各有一份副本以保证数据的安全性。
 
 4，查看子object 的 size
-由文章开头的 osd tree 可以看到，`osd.4` 在 `host sz-2` 上面，我们 SSH 登录到 `host sz-2`，
+由文章开头的 osd tree 可以看到，`osd.4` 在 `host sz-2` 上面，我们 SSH 登录到 `host sz-2`，并进入 `osd.4` 的数据目录
+ 
+     ssh sz-2
+     cd /var/lib/ceph/osd/ceph-4/current/
+     
+ 然后，找出归置组 `22.58` 的数据目录
+ 
+    [root@sz-2 current]# ll | grep 22.58   
+    drwxr-xr-x 3 root root 12288 Jun  3 13:53 22.58_head
+    drwxr-xr-x 2 root root     6 Jun  3 13:49 22.58_TEMP
+    [root@sz-2 current]# cd 22.58_head
+
+找出子object在 `osd.4`的文件系统上的真实文件
+
+    [root@sz-2 DIR_D]# ll | grep fm727
+    -rw-r--r-- 1 root root 1572864 Jun 16 14:46 default.21039.18\u\umultipart\ucmake\u3.6.2\uwin64\ux64.msi.2~kcu7j-Dfaenre3_ZPzygH0iLfjla1qR.1__head_A492DFD8__16
