@@ -19,8 +19,7 @@
 > layout: post  
 > title: RxBinding 学习笔记  
 > category: android
->
-> \## tags: \[android, jni\]<br>
+> tags: \[android, jni\]<br>
 > \---
 
 每篇文章的最顶部开头部分都固定采用如上格式，各字段解释如下。  
