@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ceph monitors管理
+title: ceph性能测试
 category: monitor
 tags: [原创,ceph,性能测试]
 ---
