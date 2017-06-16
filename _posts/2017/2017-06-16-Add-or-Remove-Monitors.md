@@ -126,24 +126,21 @@ tags: [ceph,monitor,监控器]
     === mon.sz-3 === 
     Stopping Ceph mon.sz-3 on sz-3...kill 11884...done
     `
-
 2. 从集群中移除monitor
 
-
-    [root@sz-3 ceph]# ceph mon remove sz-3    
+    `[root@sz-3 ceph]# ceph mon remove sz-3    
     2017-06-14 17:40:07.570951 7f45db885700  0 -- :/1167820720 >> 10.133.134.243:6789/0 pipe(0x7f45e006e550 sd=4 :0 s=1 pgs=0 cs=0 l=1 c=0x7f45e00632f0).fault
     removed mon.sz-3 at 10.133.134.243:6789/0, there are now 2 monitors
-
+    `
 
 3. 从 `ceph.conf` 中删除被移除的 monitor 的 `host` 和 IP 地址。主要包括：
 
-    
-    [global]
+    `[global]
     mon_initial_members=
     mon_host=
     [mon.{mon-id}]
     host = {mon-id}
-    addr = {ip:port}
+    addr = {ip:port}`
     
 
 
