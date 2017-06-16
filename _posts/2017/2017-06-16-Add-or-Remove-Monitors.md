@@ -174,9 +174,7 @@ tags: [ceph,monitor,监控器]
 
 1. 停止所有 host 上的所有 monitor
 
-
-    service ceph stop mon || stop ceph-mon-all
-
+    `service ceph stop mon || stop ceph-mon-all`
 
 2. 识别出一个“健康”的monitor，ssh登录到它所在的 host
 
