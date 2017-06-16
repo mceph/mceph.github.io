@@ -73,10 +73,25 @@ tags: [原创,ceph,crush算法]
     pool 31 '.rgw.buckets.extra' replicated size 2 min_size 2 crush_ruleset 5 object_hash rjenkins pg_num 32 pgp_num 32 last_change 207 flags hashpspool stripe_width 0
     pool 32 '.rgw.buckets.ssd' replicated size 2 min_size 2 crush_ruleset 6 object_hash rjenkins pg_num 64 pgp_num 64 last_change 209 flags hashpspool stripe_width 0
 
-本集群为测试集群，
+本集群为测试集群，pool_size 值为 3。
 ### 查看ceph存储系统中条带化对象尺寸：
 
     [root@sz-1 ~]# ceph --show-config | grep rgw_obj_stripe_size
     rgw_obj_stripe_size = 4194304
     
-可见
+本集群条带化尺寸为 4M。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
