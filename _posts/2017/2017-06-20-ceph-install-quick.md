@@ -11,7 +11,7 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 本文主要介绍在Ubuntu16.04上通过ceph-deploy工具来快速部署一套ceph集群。
 
-# PREFLIGHT
+## 一、PREFLIGHT
 
 这里我们先给出我们将要创建的**Ceph Storage Cluster**的拓扑结构图。
 ![ceph-install-toplogic1.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-toplogic-1.png)
@@ -28,6 +28,13 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 | ``192.168.190.131``        | ``node3(osd.1)``                |  ``ceph-node3-osd``|
 
 
+修改上述每一个主机上的/etc/hosts文件，添加如下:
+{% highlight java %}
+192.168.190.128         ceph-admin
+192.168.190.129         ceph-node1-mon
+192.168.190.130         ceph-node2-osd
+192.168.190.131         ceph-node3-osd
+{% endhighlight %}
 
 
 
