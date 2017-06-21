@@ -1,4 +1,4 @@
----
+--- 
 layout: post
 title: 快速搭建ceph集群
 category: ceph
