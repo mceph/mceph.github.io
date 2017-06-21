@@ -15,3 +15,4 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 这里我们先给出我们将要创建的**Ceph Storage Cluster**的拓扑结构图。
 ![ceph-install-toplogic1.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-toplogic-1.png)
+
