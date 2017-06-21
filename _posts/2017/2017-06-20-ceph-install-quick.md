@@ -20,17 +20,24 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 在我们的构建过程中，我们采用4台Ubuntu16.04虚拟机：
 
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+
 ``   主机IP                 部署组件                         主机名``
 
 `--------------------------------------------------------------------------`
 
-``192.168.190.128               admin-node(ceph-deploy)         ceph-admin``
+``192.168.190.128          admin-node(ceph-deploy)         ceph-admin``
 
-``192.168.190.129               node1(mon.node1)                ceph-node1-mon``
+``192.168.190.129          node1(mon.node1)                ceph-node1-mon``
 
-``192.168.190.130               node2(osd.0)                    ceph-node2-osd``
+``192.168.190.130          node2(osd.0)                    ceph-node2-osd``
 
-``192.168.190.131               node3(osd.1)                    ceph-node3-osd``
+``192.168.190.131          node3(osd.1)                    ceph-node3-osd``
 
 
 
