@@ -25,5 +25,3 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 *192.168.190.129  --------  node1(mon.node1)            ceph-node1-mon*
 *192.168.190.130  --------  node2(osd.0)                ceph-node2-osd*
 *192.168.190.131  --------  node3(osd.1)                ceph-node3-osd*
-
-
