@@ -545,3 +545,187 @@ rgw frontends = civetweb port=[::]:80
 <pre><code>
 ceph-deploy mon add {ceph-node}
 </code></pre>
+这里我们配置为：
+<pre><code>
+ceph-deploy mon add ceph-node2-osd
+ceph-deploy mon add ceph-node3-osd
+</code></pre>
+
+一旦你已经添加了新的ceph monitors，ceph就会同步这些monitors然后形成一个quorum，你可以通过如下的命令来获得quorum的状态：
+<pre><code>
+ceph quorum_status --format json-pretty
+</code></pre>
+
+``Tips：当你运行多个ceph monitors的时候，你需要在每一台monitor主机上安装和配置NTP来确保这些monitors是NTP peers``
+<br />
+
+### 2.3 STORING/RETRIEVING OBJECT DATA
+为了在Ceph Storage Cluster中存储对象数据，一个Ceph client必须：
+
+* Set an object name
+* Specify a pool
+
+Ceph Client获得最新的cluster map，然后通过CRUSH算法计算出如何将一个对象映射到placement group上，然后再计算出如何指定一个placement group到一个Ceph OSD Daemon上。为了找到该对象的位置，你只需要给出对象名及pool名即可。例如：
+<pre><code>
+ceph osd map {poolname} {object-name}
+</code></pre>
+<br />
+
+下面给出一个存储/获取对象数据的例子(Locate an Object):
+
+1）	首先创建一个对象。指定一个对象的名字，一个包含对象数据的文件路径和一个pool名字
+<pre><code>
+echo {Test-data} > testfile.txt
+rados mkpool data
+rados put {object-name} {file-path} --pool=data
+rados put test-object-1 testfile.txt --pool=data
+</code></pre>
+
+2）	确定Ceph Storage Cluster已经存储了该对象，执行如下命令
+<pre>
+rados -p data ls
+</pre>
+
+执行结果如下：
+
+![ceph-inst-rados.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-rados.png)
+
+3）	获得该对象的存储位置
+<pre>
+ceph osd map {pool-name} {object-name}
+ceph osd map data test-object-1
+</pre>
+执行结果如下：
+
+![ceph-inst-osdmap.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-osdmap.png)
+
+
+4）	获取一个对象
+
+从data这个pool中获取test-object-1对象，结果输出到abcd.txt中：
+<pre>
+rados –p data get test-object-1 abcd.txt
+</pre>
+
+5）	移除一个对象
+<pre>
+rados rm test-object-1 --pool=data
+</pre>
+
+随着集群的变化，对象的存储位置也有可能会动态的发生变化。Ceph的动态均衡特性使得这些对象可以自动的进行迁移。
+
+
+
+
+
+
+
+
+
+## 3.  BLOCK DEVICE QUICK START
+在使用block device之前，请确保你已经通过上面的``STORAGE CLUSTER QUICK STAR``建立起了一套active + clean状态的Ceph Storage Cluster。
+
+``NOTE：Ceph Block Device也被称为RBD或RADOS Block Device.``
+
+![ceph-inst-blockdev.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-blockdev.png)
+
+你可以使用一台虚拟机设备来作为ceph-client节点，但是不要在与你的Ceph Storage Cluster集群节点的物理机上执行如下操作（除非你使用的是虚拟机）。
+
+**``注意：实际实验时，由于条件的限制我们会将ceph-admin与ceph-client运行在同一台虚拟机上，但是如下讲解时，还是会按两个不同的主机来进行讲解。``**
+
+### 3.1 INSTALL CEPH
+
+1）检查对应的Linux Kernel版本是否合适
+<pre>
+lsb_release -a
+uname -r
+</pre>
+
+2)	在admin node上，使用ceph-deploy来将ceph安装到ceph-client节点上
+<pre>
+ceph-deploy install ceph-client
+</pre>
+
+3)	在admin node上，使用ceph-deploy命令来拷贝Ceph配置文件和ceph.client.admin.keyring文件到ceph-client上
+<pre>
+ceph-deploy admin ceph-client
+</pre>
+
+ceph-deploy工具会拷贝keyring文件到/etc/ceph目录下。请确保该keyring文件具有合适的读权限（例如：``sudo chmod +r /etc/ceph/ceph.client.admin.keyring``）
+
+<br />
+
+
+### 3.2 CONFIGURE A BLOCK DEVICE
+
+1） 在ceph-client node上，创建一个block device image
+<pre>
+rbd create foo --size 4096 [-m {mon-IP}] [-k /path/to/ceph.client.admin.keyring]
+</pre>
+
+2） 在ceph-client节点，将创建的image映射到block device上
+<pre>
+sudo rbd map foo --name client.admin [-m {mon-IP}] [-k /path/to/ceph.client.admin.keyring]
+</pre>
+
+这里我们会得到如下错误：
+
+![ceph-inst-bderr.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-bderr.png)
+
+执行命令”dmesg | tai”查看：
+
+![ceph-inst-bkreson.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-bkreson.png)
+
+问题的原因在于在Ceph高版本进行map image时，默认Ceph在创建image（上面的foo）时会增加血多features，这些features需要内核支持，在这里Ubuntu16.04内核支持有限，所以需要手动关掉一些features。
+
+我们首先使用``rbd info foo``来查看foo当前所支持的featrues：
+
+![ceph-inst-rbdinfo.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-rbdinfo.png)
+
+上面我们创建的foo映像有很多特征，我们这里可以手动关掉一些特征，然后重新map；如果要想一劳永逸，可以在ceph.conf中加入rbd_default_featrues = 1来设置默认的features（数值仅是layering对应的bit码所对应的整数值）。
+
+这里关闭不支持的特性：
+<pre>
+rbd feature disable foo exclusive-lock, object-map, fast-diff, deep-flatten
+</pre>
+
+
+然后重新映射：
+<pre>
+sudo rbd map foo --name client.admin
+</pre>
+
+这里映射成功：
+
+![ceph-inst-remap.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-remap.png)
+
+4）	在ceph-client节点上使用该block device创建一个文件系统
+<pre>
+sudo mkfs.ext4 -m0 /dev/rbd/rbd/foo
+
+This may take a few moments.
+</pre>
+
+5）	将创建的文件系统挂载到ceph-client节点上
+<pre>
+sudo mkdir /mnt/ceph-block-device
+sudo mount /dev/rbd/rbd/foo /mnt/ceph-block-device
+cd /mnt/ceph-block-device
+</pre>
+
+6）	配置该block device在系统启动的时候自动映射及挂载（在关机的时候自动unmounted/unmapped）
+<br /><br /><br />
+
+
+
+## 4. CEPH FS QUICK START
+
+在使用block device之前，请确保你已经通过上面的``STORAGE CLUSTER QUICK START``建立起了一套Ceph Storage Cluster。请在admin host上执行本quick start。
+
+### 4.1 PREREQUISITES
+
+1）确保你有一个合适的Linux内核版本
+<pre>
+lsb_release -a
+uname -r
+</pre>
