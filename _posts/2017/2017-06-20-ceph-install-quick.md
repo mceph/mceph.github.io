@@ -81,4 +81,20 @@ admin node(管理节点）必须要能够通过SSH password-less的访问Ceph节
 确保使能了NTP service，并且每一个Ceph节点都使用同样的NTP时间服务器。可以查看NTP对应的网站了解详细信息：http://www.ntp.org/
 
 安装完成后通过如下命令查看NTP是否正常工作：
+
 ![ceph-install-ntpsrv.png](https://mceph.github.io/assets/images/2017/ceph-inst/ntp-service.png)
+
+**INSTALL SSH SERVER**
+针对所有的Ceph节点执行如下的步骤：
+
+1）	安装一个SSH server到每一个Ceph节点上
+<pre><code>
+# sudo apt-get install openssh-server
+</pre><code>
+
+2） 确保SSH运行在所有Ceph节点上
+<pre><code>
+# service --status-all | grep ssh
+
+ [ + ] ssh
+</pre><code>
