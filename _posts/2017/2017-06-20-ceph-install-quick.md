@@ -48,21 +48,21 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 1）添加release key
 <pre><code>
-wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+# wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
 </code></pre> 
 
 2) 添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)
 <pre><code>
-echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+# echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 </code></pre>
 
 这里我们选用jewel版本：
 <pre>
-echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+# echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 </pre>
 ``NOTE: Ceph的一些发布版本可以在这里找到(http://docs.ceph.com/docs/master/releases/)``
 
 3) 更新源仓库并安装ceph-deploy
 <pre><code>
-sudo apt-get update && sudo apt-get install ceph-deploy
+# sudo apt-get update && sudo apt-get install ceph-deploy
 </code></pre>
