@@ -46,12 +46,12 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 添加Ceph仓库到``ceph-deploy`` admin node，然后开始安装ceph-deploy。
 针对DEBIAN/UBUNTU执行如下步骤：
 
-1）添加release key
+1） 添加release key
 <pre><code>
 # wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
 </code></pre> 
 
-2) 添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)
+2） 添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)
 <pre><code>
 # echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 </code></pre>
@@ -62,7 +62,23 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 </pre>
 ``NOTE: Ceph的一些发布版本可以在这里找到(http://docs.ceph.com/docs/master/releases/)``
 
-3) 更新源仓库并安装ceph-deploy
+3） 更新源仓库并安装ceph-deploy
 <pre><code>
 # sudo apt-get update && sudo apt-get install ceph-deploy
 </code></pre>
+
+
+### 1.2 CEPH NODE SETUP
+admin node(管理节点）必须要能够通过SSH password-less的访问Ceph节点。当ceph-deploy登录到ceph节点上的时候，该特殊的用户必须具有passwordless sudo特权。
+
+**INSTALL NTP**
+
+我们建议在Ceph所有的节点上（特别是Ceph Monitor节点）安装NTP来阻止由于时钟偏移所产生的问题。针对Debian/Ubuntu上执行如下命令：
+<pre><code>
+# sudo apt-get install ntp
+</code></pre>
+
+确保使能了NTP service，并且每一个Ceph节点都使用同样的NTP时间服务器。可以查看NTP对应的网站了解详细信息：http://www.ntp.org/
+
+安装完成后通过如下命令查看NTP是否正常工作：
+![ceph-install-ntpsrv.png](https://mceph.github.io/assets/images/2017/ceph-inst/ntp-service.png)
