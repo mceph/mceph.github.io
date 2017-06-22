@@ -747,16 +747,17 @@ ceph-deploy install ceph-client
 <pre>
 ceph -s [-m {monitor-ip-address}] [-k {path/to/ceph.client.admin.keyring}]
 </pre>
-
 <br />
+
+
 ### 4.2 CREATE A FILESYSTEM
 
 我们已经在前面“STORAGE CLUSTER QUICK START”中创建了一个MDS，但是在你创建pools和文件系统之前它是处于inactive状态。请参看: ``Create a Ceph filesystem``(http://docs.ceph.com/docs/master/cephfs/createfs/)
 
 <pre>
-ceph osd pool create cephfs_data <pg_num>
-ceph osd pool create cephfs_metadata <pg_num>
-ceph fs new <fs_name> cephfs_metadata cephfs_data
+ceph osd pool create cephfs_data &lt;pg_num&gt;
+ceph osd pool create cephfs_metadata &lt;pg_num&gt;
+ceph fs new &lt;fs_name&gt; cephfs_metadata cephfs_data
 </pre>
 
 这里我们配置如下：
