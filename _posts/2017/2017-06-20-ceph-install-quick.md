@@ -718,6 +718,13 @@ cd /mnt/ceph-block-device
 
 
 
+
+
+
+
+
+
+
 ## 4. CEPH FS QUICK START
 
 在使用block device之前，请确保你已经通过上面的``STORAGE CLUSTER QUICK START``建立起了一套Ceph Storage Cluster。请在admin host上执行本quick start。
@@ -729,3 +736,195 @@ cd /mnt/ceph-block-device
 lsb_release -a
 uname -r
 </pre>
+
+2）在admin节点上，使用ceph-deploy安装ceph到ceph-client节点上
+<pre>
+ceph-deploy install ceph-client
+</pre>
+
+3）确保Ceph Storage Cluster处于active + clean的运行状态，同时确保至少有一个Ceph Metadata Server正在运行
+
+<pre>
+ceph -s [-m {monitor-ip-address}] [-k {path/to/ceph.client.admin.keyring}]
+</pre>
+
+<br />
+### 4.2 CREATE A FILESYSTEM
+
+我们已经在前面“STORAGE CLUSTER QUICK START”中创建了一个MDS，但是在你创建pools和文件系统之前它是处于inactive状态。请参看: ``Create a Ceph filesystem``(http://docs.ceph.com/docs/master/cephfs/createfs/)
+
+<pre>
+ceph osd pool create cephfs_data <pg_num>
+ceph osd pool create cephfs_metadata <pg_num>
+ceph fs new <fs_name> cephfs_metadata cephfs_data
+</pre>
+>
+这里我们配置如下：
+<pre>
+ceph osd pool create cephfs_data 32
+ceph osd pool create cephfs_metadata 32
+ceph fs new testfs cephfs_metadata cephfs_data
+</pre>
+
+![ceph-inst-fsls.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-fsls.png)
+
+**这里简单介绍一下PG的概念：**
+
+当Ceph集群接收到存储请求时，Ceph会将其分散到各个PG中，PG是一组对象的逻辑集合；根据Ceph存储池的复制级别，每个PG的数量都会被复制并分发到集群的多个OSD上；一般来说增加PG数量能降低OSD负载，一般每个OSD大约分配50~100PG，关于PG数量一般遵循以下公式：
+* 集群PG总数 = (OSD 总数 * 100)/数据最大副本数
+* 单个存储池PG数 = (OSD 总数 * 100)/数据最大副本数/存储池数
+
+注意，PG最终结果应当为最接近以上计算公式的2的N次幂（向上取值）；如我的虚拟机环境每个存储池PG数 = 3(OSD) * 100/3(副本)/5(大约5个存储池) = 20，向上取2的N次幂为32。
+<br />
+
+
+### 4.2 CREATE A SECTET FILE
+Ceph Storage Cluster默认会开启身份认证机制。你需要创建一个包含secret key的文件（注意：并不是keyring本身）。针对一个特定的用户建立secret key的操作步骤如下：
+
+1）	在一个keyring文件中标识一个用户，例如：
+<pre>
+cat ceph.client.admin.keyring
+</pre>
+
+2）	拷贝需要使用挂载Ceph文件系统的用户的key，类似于如下：
+<pre>
+[client.admin]
+   key = AQCj2YpRiAe6CxAA7/ETt7Hcl9IyxyYciVs47w==
+</pre>
+
+3）	打开一个文本编辑器
+
+4）	将key复制到该空文件中。类似于如下：
+<pre>
+AQCj2YpRiAe6CxAA7/ETt7Hcl9IyxyYciVs47w==
+</pre>
+
+
+5）	Save the file with the user name as an attribute (e.g., admin.secret)
+
+6）确保该用户具有适当的权限访问该secret文件，对于其他用户则不可见
+<br />
+
+
+### 4.3 KERNEL DRIVER
+内核驱动挂载Ceph FS
+<pre>
+sudo mkdir /mnt/mycephfs
+sudo mount -t ceph {ip-address-of-monitor}:6789:/ /mnt/mycephfs
+</pre>
+
+
+Ceph Storage Cluster默认会使用身份验证机制，在挂载的时候需要指定name及secretfile。例如：
+<pre>
+sudo mount -t ceph 192.168.0.1:6789:/ /mnt/mycephfs -o name=admin,secretfile=admin.secret
+</pre>
+
+
+``注意：有些版本的Linux内核mount并不支持secretfile选项，比如Ubuntu16.04似乎只支持secret选项：``
+<pre>
+sudo mount -t ceph 192.168.0.1:6789:/ /mnt/mycephfs -o name=admin,secret= AQDNUz9ZZiI6GBAAolxzpG2mLypQ51SA+zyrog==
+</pre>
+
+``NOTE：请在admin节点上挂载Ceph FS文件系统，不要在server节点上``
+<br />
+
+### 4.4 FILESYSTEM IN USER SPACE(FUSE)
+1）安装ceph-fuse
+<pre>
+sudo apt-get install ceph-fuse
+</pre>
+
+
+2）在用户空间挂载Ceph FS（FUSE）
+<pre>
+sudo mkdir ~/mycephfs
+sudo ceph-fuse -m {ip-address-of-monitor}:6789 ~/mycephfs
+</pre>
+
+默认情况下Ceph Storage Cluster会使用身份认证机制，假如对应的keyring不在默认位置的话(/etc/ceph)，请显示指定：
+<pre>
+sudo ceph-fuse -k ./ceph.client.admin.keyring -m 192.168.0.1:6789 ~/mycephfs
+</pre>
+
+### 4.5 UMOUNT
+<pre>
+sudo umount /mnt/mycephfs
+sudo umount ~/mycephfs
+</pre>
+
+<br /><br /><br />
+
+
+
+
+
+
+
+
+
+## 5 CEPH OBJECT GATEWAY QUICK START
+从版本v0.80开始，Ceph Storage大大的简化了Ceph Object Gateway的安装与配置。Gateway Daemon内嵌了Civetweb，因此你并不需要再安装一个web服务器或者配置FastCGI。另外，ceph-deploy也可以安装gateway包，产生key，配置一个data目录及创建一个gateway实例。
+
+``Tip：Civetweb默认使用7480端口。你必须允许打开该端口，又或者在ceph.conf配置文件中选择另一个端口(例如80端口)``
+
+建立一个Ceph Object Gateway，请参照如下的步骤：
+
+### 5.1 INSTALLING CEPH OBJECT GATEWAY
+1）在client-node上执行预安装步骤。假如需要使用Civetweb的默认端口7480的话，你必须使用firewall-cmd 或 iptables打开该端口。
+
+2）从admin node上的工作目录，在client-node上安装Ceph Object Gateway
+<pre>
+ceph-deploy install --rgw <client-node> [<client-node> ...]
+</pre>
+这里，我们在“STORAGE CLUSTER QUICK START”中已经全部安装了ceph相关的一些工具，也包括rgw，因此这里可以不用再进行安装。
+
+
+### 5.2 CREATING THE CEPH OBJECT GATEWAY INSTANCE
+
+从admin节点的工作目录，在client-node节点上创建一个Ceph Object Gateway，例如：
+<pre>
+ceph-deploy rgw create <client-node>
+</pre>
+一旦该gateway运行之后，你可以通过7480端口访问它（http://client-node:7480）
+
+
+
+### 5.3 CONFIGURING THE CEPH OBJECT GATEWAY INSTANCE
+
+1） 要改变默认的端口，请修改ceph配置文件。添加一个[client.rgw.<client-node>]，请用ceph client节点的名称替换<client-node>。例如：你的节点名称为client-node，你可以在[global] section之后添加如下section：
+
+<pre>
+[client.rgw.client-node]
+rgw_frontends = "civetweb port=80"
+</pre>
+
+``NOTE: 请确保port=<port-number>之间是没有空格的``
+
+2) 为了使端口设置生效，需要重启Ceph Object Gateway
+<pre>
+sudo service radosgw restart id=rgw.<short-hostname>
+</pre>
+
+
+
+3：检查防火墙，看选中的80端口是否已经打开。假如没有打开，添加该端口并重新加载防火墙配置
+<pre>
+sudo firewall-cmd --list-all
+sudo firewall-cmd --zone=public --add-port 80/tcp --permanent
+sudo firewall-cmd --reload
+</pre>
+
+
+4：通过http访问
+<pre>
+http://<client-node>:<port>
+</pre>
+
+
+
+
+
+
+
+
+
