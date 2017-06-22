@@ -5,6 +5,10 @@ category: ceph installation
 tags: [原创,ceph manual installation]
 ---
 
+
+
+## 概览
+
 如下我们是在无外网环境的centos7.1上手动安装ceph集群。
 <pre>
 cat /etc/redhat-release
@@ -92,7 +96,7 @@ systemctl disable firewalld.service  ##关闭iptables开机运行
 <pre>
 sudo setenforce 0
 </pre>
->
+
 为了永久的配置SELinux（假如SELinux会影响到Ceph集群的安装、运行的话），请修改配置文件/etc/selinux/config.
 <pre>
 sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config         ##关闭SELinux开机启动
