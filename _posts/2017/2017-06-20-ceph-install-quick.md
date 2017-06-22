@@ -35,7 +35,12 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 192.168.190.130         ceph-node2-osd
 192.168.190.131         ceph-node3-osd
 </pre>
-
+<br />
+修改每一个节点的主机名**hostname ${hostname}**，例如修改192.168.190.128主机的名字为ceph-admin
+<pre>
+# hostname ceph-admin
+</pre>
+同时修改/etc/hostname文件，以使对主机名的更高永久生效。
 
 
 
