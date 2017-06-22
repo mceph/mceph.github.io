@@ -11,7 +11,7 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 本文主要介绍在Ubuntu16.04上通过ceph-deploy工具来快速部署一套ceph集群。
 
-## 一、PREFLIGHT
+## 1、PREFLIGHT
 
 这里我们先给出我们将要创建的**Ceph Storage Cluster**的拓扑结构图。
 ![ceph-install-toplogic1.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-toplogic-1.png)
@@ -36,11 +36,31 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 192.168.190.131         ceph-node3-osd
 </pre>
 <br />
-修改每一个节点的主机名**hostname ${hostname}**，例如修改192.168.190.128主机的名字为ceph-admin
+修改每一个节点的主机名，将上面每一台虚拟机的主机名分别更改为ceph-admin,ceph-node1-mon,ceph-node2-osd,ceph-node3-osd。例如修改192.168.190.128主机的名字为ceph-admin：
 <pre>
 # hostname ceph-admin
 </pre>
 同时修改/etc/hostname文件，以使对主机名的更高永久生效。
 
+### 1.1 CEPH DEPLOY SETUP
+添加Ceph仓库到``ceph-deploy`` admin node，然后开始安装ceph-deploy。
 
+针对DEBIAN/UBUNTU执行如下步骤：
 
+1）添加release key
+<pre>
+wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
+</pre> 
+
+2) 添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)
+<pre>
+echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+</pre>
+
+这里我们选用jewel版本：
+<pre>
+echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+</pre>
+
+<br/>
+``NOTE:Ceph的一些发布版本可以在这里找到(http://docs.ceph.com/docs/master/releases/)``
