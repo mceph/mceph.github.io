@@ -29,12 +29,12 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 <br />
 修改上述每一个主机上的/etc/hosts文件，添加如下:
-<pre><code>
+<pre>
 192.168.190.128         ceph-admin-3
 192.168.190.129         ceph-node1-mon
 192.168.190.130         ceph-node2-osd
 192.168.190.131         ceph-node3-osd
-</code></pre>
+</pre>
 
 
 
