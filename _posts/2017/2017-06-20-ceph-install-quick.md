@@ -232,7 +232,7 @@ Ubuntu16.04 暂时不需要做任何改变
 
 这里我们通过上面的步骤修改/etc/hosts，已经完成了这一功能，在此只是再确认一下此功能是否有问题。
 
-<br /><br />
+<br />
 
 **1.2.7 OPEN REQUIRED PORTS**
 
@@ -261,3 +261,47 @@ sudo ufw disable
 # mkdir ceph-cluster
 # cd ceph-cluster
 </code></pre>
+如上，我们在admin node上，通过test1001账户在其home目录创建ceph-cluster文件夹(/home/test1001/ceph-cluster)。
+
+ceph-deploy工具将会输出一些文件到当前目录，因此请确保当你执行ceph-deploy时在ceph-cluster目录下。
+
+注意： 假如你以其他的用户身份登录的话，请不要用sudo或root身份执行ceph-deploy，因为它将不能处理远程主机所需要的sudo命令。
+<br />
+
+### 2.1 CREATE A CLUSTER
+
+在任何你遇到了难以解决的问题，并且需要完全重新来过的话，可以执行如下的命令来彻底清除ceph包，并且删除对应的数据及配置。
+<pre><code>
+# ceph-deploy purge {ceph-node} [{ceph-node}]
+# ceph-deploy purgedata {ceph-node} [{ceph-node}]
+# ceph-deploy forgetkeys
+</code></pre>
+
+假如你执行了purge，你必须再一次重新安装Ceph。
+
+在admin node主机的ceph-cluster目录，使用ceph-deploy按如下步骤进行操作：
+
+1）	创建集群
+<pre><code>
+# ceph-deploy new {initial-monitor-node(s)}
+</code></pre>
+
+请指定node(s)为hostname，fqdn或者hostname:fqdn，例如：
+<pre><code>
+# ceph-deploy new ceph-node1-mon
+</code></pre>
+
+注意：此处执行需要test1001具有password-less sudo权限
+
+执行完成之后，通过ls及cat命令查看当前目录。你会看到有一个Ceph配置文件，一个monitor secret keyring，及一个日志文件。请用ceph-deploy new –h来获得更多帮助信息。
+![ceph-install-keyringshow.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-keyringshow.png)
+
+2）	在Ceph配置文件中将副本数的默认值从3改为2，使Ceph集群在只有两个Ceph OSDs的情况下也能达到active + clean状态。添加如下行到[global]段下：
+<pre><code>
+osd pool default size = 2
+</code><pre>
+
+3）	假如ceph部署主机拥有超过一个网络接口，在ceph配置文件的[global]段下添加public network设置。请参看Networking Configuration Reference来获取更详细信息
+<pre><code>
+public network = {ip-address}/{netmask}
+</code><pre>
