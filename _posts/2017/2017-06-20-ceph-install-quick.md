@@ -248,6 +248,16 @@ sudo ufw disable
 
 
 
+
+
+
+
+
+
+
+
+
+
 ## 2. STORAGE CLUSTER QUICK START
 
 假如你暂时还未完成PREFLIGHT流程，请先参考上节完成。本章将会介绍通过在admin node上使用ceph-deploy来快速部署一套Ceph Storage Cluster。我们会创建拥有3个Ceph节点的集群来演示Ceph的一些功能
@@ -304,4 +314,234 @@ osd pool default size = 2
 3）	假如ceph部署主机拥有超过一个网络接口，在ceph配置文件的[global]段下添加public network设置。请参看Networking Configuration Reference来获取更详细信息
 <pre><code>
 public network = {ip-address}/{netmask}
+</code></pre>
+
+这里我们设置如下：
+<pre><code>
+public network = 192.168.190.0/24
+</code></pre>
+
+4）	安装Ceph
+<pre><code>
+ceph-deploy install {ceph-node}[{ceph-node} ...]
+</code></pre>
+
+这里我们安装如下：
+<pre><code>
+ceph-deploy install ceph-admin ceph-node1-mon ceph-node2-osd ceph-node3-osd
+</code></pre>
+
+ceph-deploy工具将会在每一个节点上安装ceph。注意：假如你使用ceph-deploy purge，你必须重新执行本步骤来安装Ceph。
+
+``注意：``
+如果在安装过程中出现initctl: Unable to connect to Upstart: Failed to connect to socket /com/ubuntu/upstart: Connection refused错误，可以执行如下命令：
+<pre><code>
+# dpkg-divert –local --rename --add /sbin/initctl
+# ln -s /bin/true /sbin/initctl
+</code></pre>
+
+5）	添加initial monitor(s)并且收集keys
+<pre><code>
+# ceph-deploy mon create-initial
+</code></pre>
+
+
+一旦你完成了该进程，你的本地目录将会有如下的一些keyrings:
+
+* ${cluster-name}.client.admin.keyring
+* ${cluster-name}.bootstrap-osd.keyring
+* ${cluster-name}.bootstrap-mds.keyring
+* ${cluster-name}.bootstrap-rgw.keyring
+
+这里我们生成的keys如下：
+
+![ceph-inst-keyringlist.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-keyringlist.png)
+
+``Note1： bootstrap-rgw.keyring只会在Hammer或者更新版本的Ceph集群安装时才会创建``
+
+``Note2：假如执行上面的create-initial命令时出现类似“Unable to find /etc/ceph/ceph.client.admin.keyring”的错误时，在ceph.conf中列出的monitor node的IP地址是一个public IP，而不是private IP。``
+<br /><br /><br />
+
+执行完上面的流程之后，我们已经快速的完成了一个简单Ceph集群的安装。如下我们再介绍一下与安装、使用相关的一些其他方面的内容：
+
+1）	**添加两个OSDs**
+
+1.1） 针对快速安装，我们将每一个Ceph OSD Daemon设置为使用一个目录而不是整个硬盘。关于OSDs及journals如何使用单独的disks/partitions，请参看ceph-deploy osd：（http://docs.ceph.com/docs/master/rados/deployment/ceph-deploy-osd）。登录对应的Ceph节点(这里为ceph-node2-osd和ceph-node3-osd)，然后为Ceph OSD Daemon创建一个目录：
+<pre><code>
+ssh ceph-node2-osd
+sudo mkdir /var/local/node2_osd
+exit
+
+ssh ceph-node3-osd
+sudo mkdir /var/local/node3_osd
+exit
+</code></pre>
+
+
+注意：在OSD存储分区的文件系统不是xfs时，有时候会在后面我们启动的时候出现这样的错误“ERROR: osd init failed: (36) File name too long”，此时需要设置一些OSD变量(ceph.conf的global段)：
+<pre><code>
+osd max object name len = 256 
+osd max object namespace len = 64
+</code></pre>
+
+1.2) 登录ceph admin节点，为远程主机(这里为ceph-node2-osd、ceph-node3-osd节点)Ceph OSD Daemon准备存储数据的磁盘
+<pre><code>
+ceph-deploy osd prepare {ceph-node}:/path/to/directory
+</code></pre>
+
+这里我们配置如下：
+<pre><code>
+ceph-deploy osd prepare ceph-node2-osd:/var/local/node2_osd ceph-node3-osd:/var/local/node3_osd
+</code></pre>
+
+1.3) 激活OSDs
+<pre><code>
+ceph-deploy osd activate {ceph-node}:/path/to/directory
+</code></pre>
+>
+这里我们配置如下：
+<pre><code>
+ceph-deploy osd activate ceph-node2-osd:/var/local/node2_osd ceph-node3-osd:/var/local/node3_osd
+</code></pre>
+
+这里我们可能会遇到“Permission denied”的问题，此时需要更改对应目录的权限（更改为Ceph集群内部保留的ceph用户，及ceph组）：
+``sudo chown ceph:ceph /var/local/node2_osd/ -R``
+
+``sudo chown ceph:ceph /var/local/node3_osd/ -R``
+
+1.4） 使用ceph-deploy命令来拷贝配置文件、admin key到admin node和 Ceph Nodes上面，这样你就可以在使用ceph CLI（命令行）执行命令时，不必每一次都指定monitor address和ceph.client.admin.keyring
+<pre><code>
+ceph-deploy admin {admin-node} {ceph-node}
+</code></pre>
+
+这里我们配置如下：
+<pre><code>
+ceph-deploy admin ceph-admin ceph-node1-mon ceph-node2-osd ceph-node3-osd
+</code></pre>
+
+执行本命令会将ceph.client.admin.keyring及ceph.conf推送到对应节点的/etc/ceph目录下
+
+1.5） 确保具有读取ceph.client.admin.keyring的权限
+
+在所有节点上执行如下语句：
+<pre><code>
+sudo chmod +r /etc/ceph/ceph.client.admin.keyring
+</code></pre>
+
+3）	检查集群是否工作正常
+<pre><code>
+ceph health
+</code></pre>
+这里我们检查集群状态为:
+
+![ceph-inst-keyringlist.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-keyringlist.png)
+
+
+
+
+
+
+### 2.2 EXPANDING YOUR CLUSTER
+一旦你已经建立起来一个基本的集群并运行起来之后，后面你就可以对该集群进行扩展。这里我们添加一个Ceph OSD Daemon和一个Ceph Metadata Server到node1上，然后再添加一个Ceph Monitor到node2和node3上以达到指定数量的Ceph Monitors。
+
+![ceph-inst-expanding.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-expanding.png)
+
+1）**ADDING AN OSD**
+
+我们通过上面的安装步骤已经建立起了3个节点的ceph集群，这里我们添加OSD到monitor node(ceph-node1-mon)上
+
+1.1）从ceph-admin上登录ceph-node1-mon上
+<pre><code>
+ssh ceph-node1-mon
+sudo mkdir /var/local/node1_osd
+exit
+</code></pre>
+
+这里也要设置要相应的权限：
+
+``sudo chown ceph:ceph /var/local/node1_osd/ -R``
+
+1.2）从ceph-deploy节点(ceph-admin)上准备好OSD
+<pre><code>
+ceph-deploy osd prepare {ceph-node}:/path/to/directory
+</code></pre>
+这里我们配置为如下：
+<pre><code>
+ceph-deploy osd prepare ceph-node1-mon:/var/local/node1_osd
+</code></pre>
+
+1.3) activate the OSDs
+<pre><code>
+ceph-deploy osd activate {ceph-node}:/path/to/directory
+</code></pre>
+
+这里我们配置为如下：
+
+<pre><code>
+ceph-deploy osd activate ceph-node1-mon:/var/local/node1_osd
+</code></pre>
+
+1.4) 一旦已经添加了新的OSD，Ceph就会通过迁移placement groups到你新添加的OSD上面以达到集群的均衡，你可以通过ceph命令行观察到这个迁移
+<pre><code>
+ceph -w
+</code></pre>
+
+
+通过上面的命令，你可以看到placement group的状态从active + clean 变为active with some degraded objects，最后当迁移完成之后又会变成active + clean状态。
+<br />
+
+
+2) **ADD AN METADATA SERVER**
+
+为了使用CephFS，你需要至少一个metadata server，执行如下的命令来创建一个metadata server:
+<pre><code>
+ceph-deploy mds create {ceph-node}
+</code></pre>
+这里我们在node1(ceph-node1-mon)上部署metadata server:
+<pre><code>
+ceph-deploy mds create ceph-node1-mon
+</code></pre>
+
+执行完成之后，我们可以到ceph-node1-mon主机上通过ps看到mds进程已经运行起来了。
+
+``NOTE： 当前在实际的Ceph产品中只会运行一个metadata server。你可以使用多个，但是当前没有商业上对多metadata server的ceph集群的支持``
+<br />
+
+3) **ADD AN RGW INSTANCE**
+
+为了使用Ceph的Ceph Object Gateway(ceph对象网关)组件，你必须部署一个RGW实例。执行如下的命令来创建一个新的RGW实例：
+<pre><code>
+ceph-deploy rgw create {gateway-node}
+</code></pre>
+这里配置为：
+<pre><code>
+ceph-deploy rgw create ceph-node1-mon
+</code></pre>
+
+``NOTE: RGW功能是从Hammer开始才有的一项功能，ceph-deploy从v1.5.23开始才支持rgw命令``
+
+这里可以通过如下命令来进行访问：
+
+![ceph-inst-rgw.png](https://mceph.github.io/assets/images/2017/ceph-inst/ceph-inst-rgw.png)
+
+默认情况下，RGW会监听7480端口。可以通过修改运行RGW节点上的ceph.conf文件来更改端口：
+<pre><code>
+[client]
+rgw frontends = civetweb port=80
+</code></pre>
+使用IPv6地址的话，可以采用如下方式：
+
+<pre><code>
+[client]
+rgw frontends = civetweb port=[::]:80
+</code></pre>
+<br />
+
+4) **ADDING MONITORS**
+
+一个ceph存储集群需要至少运行一个Ceph monitor。为了达到高可用性，Ceph Storage Clusters通常会运行多个Ceph Monitors，这样当一个Ceph monitor失效的情况下并不会导致整个存储集群不能正常工作。Ceph使用Paxos算法，其需要获得所有monitor的多数工作正常。
+
+如下，我们添加两个Ceph monitors到集群中：
+<pre><code>
+ceph-deploy mon add {ceph-node}
 </code></pre>
