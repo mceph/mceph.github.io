@@ -70,8 +70,9 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 ### 1.2 CEPH NODE SETUP
 admin node(管理节点）必须要能够通过SSH password-less的访问Ceph节点。当ceph-deploy登录到ceph节点上的时候，该特殊的用户必须具有passwordless sudo特权。
+<br />
 
-**INSTALL NTP**
+**1.2.1 INSTALL NTP**
 
 我们建议在Ceph所有的节点上（特别是Ceph Monitor节点）安装NTP来阻止由于时钟偏移所产生的问题。针对Debian/Ubuntu上执行如下命令：
 <pre><code>
@@ -83,8 +84,10 @@ admin node(管理节点）必须要能够通过SSH password-less的访问Ceph节
 安装完成后通过如下命令查看NTP是否正常工作：
 
 ![ceph-install-ntpsrv.png](https://mceph.github.io/assets/images/2017/ceph-inst/ntp-service.png)
+<br />
 
-**INSTALL SSH SERVER**
+**1.2.2 INSTALL SSH SERVER**
+
 针对所有的Ceph节点执行如下的步骤：
 
 1）	安装一个SSH server到每一个Ceph节点上
