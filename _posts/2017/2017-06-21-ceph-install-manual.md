@@ -283,7 +283,7 @@ sudo yum localinstall *.rpm
 
 ![manual-inst-toplogic.png](https://mceph.github.io/assets/images/2017/manual-inst/manual-inst-toplogic.png)
 
-1）	**MONITOR BOOTSTRAPPING**
+1）	**``MONITOR BOOTSTRAPPING``**
 
 构建一个monitor需要如下一些步骤：
 
@@ -499,7 +499,7 @@ ceph -s
 <br />
 
 
-2) **MANAGER DAEMON CONFIGURATION**
+2) **``MANAGER DAEMON CONFIGURATION``**
 
 在你部署ceph-mon daemon的每一个节点上，你都应该建立一个ceph-mgr daemon。
 
@@ -512,7 +512,7 @@ ceph -s
 <br />
 
 
-3) **ADDING OSDs**
+3) **``ADDING OSDs``**
 
 
 一旦你已经建立并成功运行了initial monitor(s)，你应该添加一些OSDs。 在你未添加到足够的OSDs来存储对象数据的副本之前，整个集群将不能达到active + clean状态（例如：osd pool default size = 2，表明至少需要2个OSDs）。在一步一步建立起monitor之后， 你的集群就有一个默认的CRUSH map；然而，该CRUSH map并没有映射到Ceph Node的Ceph OSD Daemons。
