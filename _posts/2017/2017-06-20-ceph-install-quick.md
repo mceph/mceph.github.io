@@ -875,7 +875,7 @@ sudo umount ~/mycephfs
 
 2）从admin node上的工作目录，在client-node上安装Ceph Object Gateway
 <pre>
-ceph-deploy install --rgw <client-node> [<client-node> ...]
+ceph-deploy install --rgw &lt;client-node&gt; [<client-node> ...]
 </pre>
 这里，我们在“STORAGE CLUSTER QUICK START”中已经全部安装了ceph相关的一些工具，也包括rgw，因此这里可以不用再进行安装。
 
@@ -884,7 +884,7 @@ ceph-deploy install --rgw <client-node> [<client-node> ...]
 
 从admin节点的工作目录，在client-node节点上创建一个Ceph Object Gateway，例如：
 <pre>
-ceph-deploy rgw create <client-node>
+ceph-deploy rgw create &lt;client-node&gt;
 </pre>
 一旦该gateway运行之后，你可以通过7480端口访问它（http://client-node:7480）
 
@@ -903,7 +903,7 @@ rgw_frontends = "civetweb port=80"
 
 2) 为了使端口设置生效，需要重启Ceph Object Gateway
 <pre>
-sudo service radosgw restart id=rgw.<short-hostname>
+sudo service radosgw restart id=rgw.&lt;short-hostname&gt;
 </pre>
 
 
