@@ -47,12 +47,12 @@ ceph存储集群环境的搭建较为复杂，即使参照官方文档，也容�
 
 针对DEBIAN/UBUNTU执行如下步骤：
 
-1）添加release key
+1）**添加release key**
 <pre>
 wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
 </pre> 
 
-2) 添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)
+2) **添加ceph包到仓库中，请用具体的Ceph稳定版本号替换``{ceph-stable-release}``(例如：hammer,jewel等)**
 <pre>
 echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 </pre>
@@ -61,6 +61,4 @@ echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -
 <pre>
 echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 </pre>
-
-<br/>
-``NOTE:Ceph的一些发布版本可以在这里找到(http://docs.ceph.com/docs/master/releases/)``
+``NOTE: Ceph的一些发布版本可以在这里找到(http://docs.ceph.com/docs/master/releases/)``
