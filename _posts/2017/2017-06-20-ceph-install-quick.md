@@ -917,7 +917,7 @@ sudo firewall-cmd --reload
 
 4：通过http访问
 <pre>
-http://<client-node>:<port>
+http://${client-node}:${port}
 </pre>
 
 
