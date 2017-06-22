@@ -875,7 +875,7 @@ sudo umount ~/mycephfs
 
 2）从admin node上的工作目录，在client-node上安装Ceph Object Gateway
 <pre>
-ceph-deploy install --rgw &lt;client-node&gt; [<client-node> ...]
+ceph-deploy install --rgw &lt;client-node&gt; [&lt;client-node&gt; ...]
 </pre>
 这里，我们在“STORAGE CLUSTER QUICK START”中已经全部安装了ceph相关的一些工具，也包括rgw，因此这里可以不用再进行安装。
 
