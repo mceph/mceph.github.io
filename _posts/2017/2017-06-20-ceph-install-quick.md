@@ -299,9 +299,9 @@ ceph-deploy工具将会输出一些文件到当前目录，因此请确保当你
 2）	在Ceph配置文件中将副本数的默认值从3改为2，使Ceph集群在只有两个Ceph OSDs的情况下也能达到active + clean状态。添加如下行到[global]段下：
 <pre><code>
 osd pool default size = 2
-</code><pre>
+</code></pre>
 
 3）	假如ceph部署主机拥有超过一个网络接口，在ceph配置文件的[global]段下添加public network设置。请参看Networking Configuration Reference来获取更详细信息
 <pre><code>
 public network = {ip-address}/{netmask}
-</code><pre>
+</code></pre>
