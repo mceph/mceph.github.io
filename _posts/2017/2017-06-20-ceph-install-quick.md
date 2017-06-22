@@ -758,7 +758,7 @@ ceph osd pool create cephfs_data <pg_num>
 ceph osd pool create cephfs_metadata <pg_num>
 ceph fs new <fs_name> cephfs_metadata cephfs_data
 </pre>
->
+
 这里我们配置如下：
 <pre>
 ceph osd pool create cephfs_data 32
