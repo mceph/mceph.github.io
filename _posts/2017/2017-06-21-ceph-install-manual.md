@@ -463,6 +463,7 @@ osd crush chooseleaf type = 1
 host = ceph001-node
 </pre>
 上面我们只需要添加host字段，其他的均采用默认配置mon_data, mon_addr均为默认值。
+
 ``mon_data的默认值为/var/lib/ceph/mon/${cluster-name}-${node-name}``
 
 ``mon_addr的默认值为：${node-ip}:6789，主要是用于monitor之间的通信``
