@@ -84,7 +84,7 @@ tags: [原创,ceph,crush算法]
 
 ## 上传文件
 我们通过[美的云 OSS Web 管理控制台](http://mconsole.midea.net) 上传一个大小为 15,771,063 字节，名为 `cmake-3.6.2-win64-x64.msi` 的文件。
-![](../../assets/images/upload-file-by-oss.jpg)
+![](https://mceph.github.io/assets/images/upload-file-by-oss.jpg)
 
 *当然，你也可以通过其它工具上传，比如 S3 Browser 等*
 
