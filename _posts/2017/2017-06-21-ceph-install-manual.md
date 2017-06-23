@@ -457,6 +457,17 @@ osd pool default pgp num = 333
 osd crush chooseleaf type = 1
 </pre>
 
+此外，这里还需要添加针对当前节点monitor的配置：
+<pre>
+[mon.ceph001-node1]
+host = ceph001-node
+</pre>
+上面我们只需要添加host字段，其他的均采用默认配置mon_data, mon_addr均为默认值。
+
+``mon_data的默认值为/var/lib/ceph/mon/${cluster-name}-${node-name}``
+
+``mon_addr的默认值为：${node-ip}:6789，主要是用于monitor之间的通信``
+
 
 1.15）建立done文件
 
