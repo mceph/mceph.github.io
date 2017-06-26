@@ -638,7 +638,20 @@ ceph osd crush add osd.0 1.0 host=ceph001-node2
 </pre>
 
 
-3.2.11）在你添加了一个OSD到Ceph集群中后，该OSD就处于你集群的配置当中了。然而，它名没有真正开始运行。该OSD仍然处于down和in状态，在你开始接收数据之前你必须将其启动
+3.2.11）在ceph.conf中添加当前OSD节点的配置
+<pre>
+[osd.{osd-num}]
+host = {hostname}
+osd_data = {hostdata directory}
+osd_journal_size = {osd journal size}     #单位MB
+osd_journal = {journal directory}
+</pre>
+
+一般情况下，host字段必须要进行设置。其他字段根据需要进行设置或直接采用默认值。
+
+
+
+3.2.12）在你添加了一个OSD到Ceph集群中后，该OSD就处于你集群的配置当中了。然而，它名没有真正开始运行。该OSD仍然处于down和in状态，在你开始接收数据之前你必须将其启动
 
 针对Debian/CentOS/RHEL，使用sysvinit来启动：
 <pre>
