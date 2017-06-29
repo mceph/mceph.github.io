@@ -49,7 +49,7 @@ tags: [原创,ceph,性能测试]
 
 磁盘吞吐量在 170 MB/s 左右
  
-### 测试磁盘读性能
+### 测试磁盘写请求数
 
     [root@oss-90 ceph-0]# dd if=/dev/zero of=512 bs=512 count=10000 oflag=direct
     10000+0 records in
