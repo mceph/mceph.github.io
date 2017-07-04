@@ -1,3 +1,10 @@
+--- 
+layout: post
+title: ceph mon选举过程
+category: ceph mon election
+tags: [原创,ceph mon election]
+---
+
 <html>
 <head>
   <title>Evernote Export</title>
